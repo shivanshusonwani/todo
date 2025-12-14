@@ -12,7 +12,7 @@ import { FiCalendar, FiMenu } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 import { AuthContext } from "../context/AuthContext";
 
-const API_URL = "/task";
+const api = import.meta.env.VITE_API_URL;
 
 export default function Home() {
 	const { user, logout } = useContext(AuthContext);
@@ -25,9 +25,9 @@ export default function Home() {
 	// Fetch todos from backend
 	const fetchTodos = async () => {
 		try {
-			const response = await axios.get("/task");
+			const response = await axios.get(`${api}/task`);
 			setTodos(response.data.tasks);
-			console.log(response.data.tasks);
+			// console.log(response.data.tasks);
 		} catch (error) {
 			console.error("Error fetching todos:", error);
 		}
@@ -41,7 +41,7 @@ export default function Home() {
 		if (!newTodo.trim()) return;
 
 		try {
-			const res = await axios.post(API_URL, {
+			const res = await axios.post(`${api}/task`, {
 				task: newTodo,
 				important: false,
 				completed: false,
@@ -59,7 +59,7 @@ export default function Home() {
 		const todo = todos.find((t) => t._id === id);
 		if (!todo) return;
 		try {
-			const response = await axios.patch(`${API_URL}/${id}/complete`, {
+			const response = await axios.patch(`${api}/task/${id}/complete`, {
 				completed: !todo.completed,
 			});
 			setTodos(todos.map((t) => (t._id === id ? response.data : t)));
@@ -72,7 +72,7 @@ export default function Home() {
 		const todo = todos.find((t) => t._id === id);
 		if (!todo) return;
 		try {
-			const response = await axios.patch(`${API_URL}/${id}/important`, {
+			const response = await axios.patch(`${api}/task/${id}/important`, {
 				important: !todo.important,
 			});
 			setTodos(todos.map((t) => (t._id === id ? response.data : t)));
@@ -83,7 +83,7 @@ export default function Home() {
 
 	const deleteTodo = async (id) => {
 		try {
-			await axios.delete(`task/${id}`);
+			await axios.delete(`${api}/task/${id}`);
 			setTodos(todos.filter((t) => t._id !== id));
 		} catch (err) {
 			console.error("Error deleting todo:", err);
